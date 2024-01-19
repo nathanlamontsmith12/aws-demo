@@ -14,19 +14,12 @@ export const Sidebar = () => {
                     top: HEADER_HEIGHT,
                     height: "100%"
                 }}
+                selectedKeys={["all-documents"]}
                 mode="inline"
                 items={[
                     {
-                        key: "menu-item-1",
-                        label: "Menu Item 1"
-                    },
-                    {
-                        key: "menu-item-2",
-                        label: "Menu Item 2"
-                    },
-                    {
-                        key: "menu-item-3",
-                        label: "Menu Item 3"
+                        key: "all-documents",
+                        label: "All Documents"
                     }
                 ]}
             />

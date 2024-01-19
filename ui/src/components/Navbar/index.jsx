@@ -19,9 +19,10 @@ export const NavBar = () => {
             <Menu
                 style={MENU_STYLE}
                 mode="horizontal"
+                selectedKeys={["documents"]}
                 items={[
                     {
-                        key: "Documents",
+                        key: "documents",
                         label: <Link to={"/"}>Documents</Link>
                     }
                 ]}
