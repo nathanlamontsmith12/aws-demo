@@ -3,7 +3,7 @@ import { message as antMessage } from "antd";
 
 let messageOpen = false;
 
-export const ReactMessageContext = createContext();
+export const ReactMessageContext = createContext({});
 
 export const Message = ({ children }) => {
     const [messageApi, messageContext] = antMessage.useMessage();
@@ -19,13 +19,13 @@ export const Message = ({ children }) => {
     };
 
     return (
-            <ReactMessageContext.Provider value={{
-                message,
-                messageOpen,
-                messageApi
-            }}>
-                { messageContext }
-                { children }
-            </ReactMessageContext.Provider>
+        <ReactMessageContext.Provider value={{
+            message,
+            messageOpen,
+            messageApi
+        }}>
+            { messageContext }
+            { children }
+        </ReactMessageContext.Provider>
     );
 };

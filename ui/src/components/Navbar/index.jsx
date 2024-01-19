@@ -25,20 +25,8 @@ export const NavBar = () => {
                     mode="horizontal"
                     items={[
                         {
-                            key: "cases",
-                            label: <Link to={"/cases"}>Cases</Link>
-                        },
-                        {
-                            key: "timeline",
-                            label: <Link to={"/timeline"}>Timeline</Link>
-                        },
-                        {
-                            key: "new-case",
-                            label: <Link to={"/cases/new"}>New Case</Link>
-                        },
-                        {
-                            key: "logout",
-                            label: <Link to={"/logout"}>Logout</Link>
+                            key: "Documents",
+                            label: <Link to={"/"}>Documents</Link>
                         }
                     ]}
                 />

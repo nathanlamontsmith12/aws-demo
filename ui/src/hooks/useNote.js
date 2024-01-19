@@ -1,12 +1,12 @@
+import { useContext } from "react";
 import { ReactMessageContext } from "../context/message.jsx";
 
-export const useMessage = () => {
-    console.log(ReactMessageContext);
+export const useNote = () => {
     const {
         message,
         messageOpen,
         messageApi
-    } = ReactMessageContext;
+    } = useContext(ReactMessageContext);
 
     return [ message, messageOpen, messageApi ];
 };
