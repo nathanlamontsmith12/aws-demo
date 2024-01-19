@@ -4,14 +4,10 @@ import { handleMutationError } from "./_mutation-helpers.js";
 
 export const createDocument = async (_root, variables) => {
     try {
-        const newDocument = await insertData(variables, DocumentModels);
+        await insertData(variables, DocumentModels);
         return {
             success: true,
-            message: "Successfully created document",
-            data: {
-                ...newDocument,
-                __typename: "Document"
-            }
+            message: "Successfully created document"
         };
     } catch (err) {
         return handleMutationError(err, "Error when attempting to create document");

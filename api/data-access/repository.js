@@ -1,7 +1,10 @@
+import { DOCUMENT_UPLOAD_STATUSES } from "../constants.js";
 import { knex } from "../db.js";
 
 export const repository = {
-    getBasicRole: () => {
-        return knex("roles").where("name", "BASIC").first();
+    getFailedUploads: () => {
+        return knex("documents")
+            .where("upload_status", DOCUMENT_UPLOAD_STATUSES.error)
+            .orderBy("created_at", "DESC");
     }
 };
