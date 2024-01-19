@@ -9,7 +9,7 @@ export const constructValidator = (test, message) => {
         } else {
             return Promise.resolve();
         }
-    }
+    };
 };
 
 export const constructValidators = (rules) => {
