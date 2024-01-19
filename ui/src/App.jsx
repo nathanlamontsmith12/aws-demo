@@ -1,46 +1,27 @@
-import React, { useState, createContext } from "react";
-import { BrowserRouter, Routes, Route, useResolvedPath } from "react-router-dom";
+import React, { useEffect } from "react";
+import Layout from "antd/es/layout/layout.js";
+import AppContext from "./context/index.jsx";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ContentRouter } from "./ContentRouter.jsx";
 import { NavBar } from "./components/Navbar/index.jsx";
 import { Sidebar } from "./components/Sidebar/index.jsx";
-import Layout from "antd/es/layout/layout.js";
 import { Logo } from "./components/Logo/index.jsx";
-import { message as antMessage } from "antd";
-import { autologin } from "./devconfig.js";
-import { IS_LOCAL } from "./env.js";
-import { automaticLoginData } from "./functions/formatSessionData.js";
+import { useMessage } from "./hooks/useMessage.js";
 
 const { Content } = Layout;
-let messageOpen = false;
-const defaultLogin = IS_LOCAL && autologin ? automaticLoginData() : {};
-
-export const AppContext = createContext([]);
 
 export const App = () => {
-    const [messageApi, messageContext] = antMessage.useMessage();
-    const [session, setSession] = useState(defaultLogin);
-    const { user } = session;
-
-    const message = async (options) => {
-        if (!messageOpen) {
-            messageOpen = true;
-            await messageApi.open(options);
-            messageOpen = false;
-            return true;
-        }
-        return false;
-    };
-
+    const [message] = useMessage();
+    useEffect(() => {
+        const id = setTimeout(() => {
+            clearTimeout(id);
+            message("Hello!");
+        }, 3000);
+        return () => clearTimeout(id);
+    }, []);
     return (
-        <BrowserRouter>
-            <AppContext.Provider value={{
-                message,
-                messageOpen,
-                messageApi,
-                session,
-                setSession
-            }}>
-                { messageContext }
+        <BrowserRouter> 
+            <AppContext>
                 <Routes>
                     <Route
                         path="*"
@@ -60,7 +41,7 @@ export const App = () => {
                         }
                     />
                 </Routes>
-            </AppContext.Provider>
+            </AppContext>
         </BrowserRouter>
     );
 };
