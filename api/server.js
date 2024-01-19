@@ -47,5 +47,5 @@ app.use(
 
 httpServer.listen({ port: 4000 }, () => {
     const date = new Date();
-    console.log(`${date} :: nthtake api is running on port 4000`);
+    console.log(`${date} :: AWS DEMO api is running on port 4000`);
 });
