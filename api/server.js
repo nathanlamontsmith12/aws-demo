@@ -25,7 +25,7 @@ const server = new ApolloServer({
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
 });
 const corsOptions = {
-    origin: "http://127.0.0.1:5173",
+    origin: process.env.ORIGIN,
     optionsSuccessStatus: 200,
     credentials: true
 };

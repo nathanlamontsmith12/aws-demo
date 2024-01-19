@@ -1,8 +1,7 @@
 import DocumentModels from "../../models/Document.js";
-import { insertData } from "../../db.js";
 import { handleMutationError } from "./_mutation-helpers.js";
 
-export const createDocument = async (_root, variables) => {
+export const createDocument = async (_root, variables, { insertData }) => {
     try {
         await insertData(variables, DocumentModels);
         return {

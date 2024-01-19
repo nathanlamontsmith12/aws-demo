@@ -5,15 +5,15 @@ import { Loading } from "../../components/Loading/index.jsx";
 export const Landing = () => {
     const { loading, error, data } = useQuery(gql`
         query {
-            users {
+            documents {
                 id
-                firstName
-                lastName
+                name
             }
         }
     `);
 
     if (error) {
+        console.log(error);
         return "Oh no! Error!!";
     }
 
@@ -25,7 +25,7 @@ export const Landing = () => {
         <div>
             <h1>Landing</h1>
             <ul>
-                { data?.users?.map((user) => <li key={user.id}>{user.firstName} {user.lastName}</li>) }
+                { data?.documents?.map((document) => <li key={document.id}>{document.name}</li>) }
             </ul>
         </div>
     );
