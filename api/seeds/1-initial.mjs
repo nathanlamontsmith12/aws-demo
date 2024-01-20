@@ -1,8 +1,8 @@
 import { v4 } from "uuid";
-import { insertData } from "../db";
-import DocumentModels from "../models/Document";
+import { insertData } from "../db.js";
+import DocumentModels from "../models/Document.js";
 
-const makeFakeDocument = (name, size) => {
+const makeFakeDocument = ({ name, size }) => {
     return {
         id: v4(),
         name,
