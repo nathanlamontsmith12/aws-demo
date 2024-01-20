@@ -32,11 +32,13 @@ export const DocumentsTable = ({ documents, loading }) => {
     ];
     
     return (
-        <Table 
-            rowKey={"id"}
-            loading={loading}
-            columns={columns}
-            dataSource={documents}
-        />
+        <div style={{ width: "900px" }}>
+            <Table 
+                rowKey={"id"}
+                loading={loading}
+                columns={columns}
+                dataSource={documents}
+            />
+        </div>
     );
 };

@@ -4,17 +4,7 @@
 }
 
 h1 {
-    margin-bottom: 10px;
     font-size: xx-large;
-}
-
-ul {
-    margin-left: 20px;
-}
-
-.container {
-    height: 100%;
-    width: 100%;
 }
 
 .flex-center {
