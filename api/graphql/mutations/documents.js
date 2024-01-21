@@ -23,7 +23,10 @@ export const createDocument = async (_root, variables, { insertData }) => {
         const documentId = newDocument.id;
 
         const onSuccessfulUpload = ({ result }) => {
-            console.log(result);
+            if (result) {
+                console.log("File Uploaded Successfully!");
+                console.log(result);
+            }
         };
 
         await uploadFile(documentId, file, { callback: onSuccessfulUpload });

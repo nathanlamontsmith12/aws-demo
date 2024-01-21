@@ -13,6 +13,7 @@ import { typeDefs } from "./graphql/schema.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { insertData, knex } from "./db.js";
 import { ONE_GB } from "./constants.js";
+import { updateDocumentOnUpload } from "./file-storage/index.js";
 
 const { json } = bodyParser;
 
@@ -50,6 +51,19 @@ app.use(
     (req, res) => {
         console.log("Receiving request :: ", req.headers);
         res.status(200).send("Hello");
+    }
+);
+
+app.use(
+    "/document-upload-complete/:documentId",
+    async (req, res) => {
+        try {
+            await updateDocumentOnUpload(req.params.id);
+            res.status(200).send("Complete");
+        } catch (err) {
+            console.log(err);
+            res.status(400).send("Error");
+        }
     }
 );
 
