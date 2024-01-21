@@ -1,17 +1,16 @@
-// first -- add environment variables ::
 import dotenv from "dotenv";
-
-// rest of the imports ::
 import express from "express";
 import http from "http";
 import cors from "cors";
 import bodyParser from "body-parser";
+import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.mjs";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { typeDefs } from "./graphql/schema.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { insertData, knex } from "./db.js";
+import { ONE_GB } from "./constants.js";
 
 dotenv.config();
 
@@ -35,6 +34,7 @@ await server.start();
 app.use(
     "/graphql",
     cors(corsOptions),
+    graphqlUploadExpress({ maxFiles: 1, maxFileSize: ONE_GB }),
     json(),
     expressMiddleware(server, {
         context: async ({ req }) => ({

@@ -26,8 +26,10 @@ export const typeDefs = `#graphql
 
     type Mutation {
         createDocument(
-            file: Upload 
-
+            file: Upload!
+            name: String!
+            size: Int!
+            dqFlag: Boolean
         ): MutationResponse
     }
 `;

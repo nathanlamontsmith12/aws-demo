@@ -7,7 +7,6 @@ export const handleMutationError = (error, message) => {
     }
     return {
         success: false,
-        error: message,
-        data: null
+        error: message
     };
 };
