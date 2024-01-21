@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 
-AWS.config.update({
+export const FileStorage = new AWS.S3({
     httpOptions: {
         timeout: 300000
     },
@@ -9,5 +9,3 @@ AWS.config.update({
     region: process.env.AWS_REGION,
     correctClockSkew: true
 });
-
-export const FileStorage = new AWS.S3();

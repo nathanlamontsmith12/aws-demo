@@ -4,6 +4,7 @@ import { getDocuments } from "./queries.js";
 import { DocumentsTable } from "./DocumentsTable.jsx";
 import { DocumentUpload } from "../../components/DocumentUpload/index.jsx";
 import { Spacer } from "../../components/Spacer/index.jsx";
+import { ErrorMessage } from "../../components/ErrorMessage/index.jsx";
 
 
 export const Documents = () => {
@@ -11,7 +12,7 @@ export const Documents = () => {
 
     if (error) {
         console.log(error);
-        return "Oh no! Error!!";
+        return <ErrorMessage />
     }
 
     return (

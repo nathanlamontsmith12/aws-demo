@@ -38,7 +38,6 @@ export const DocumentsTable = ({ documents, loading }) => {
             title: "Action",
             key: "action",
             render: ({ canDownload }) => {
-                console.log(canDownload);
                 return <Button disabled={!canDownload} >Download</Button>
             }
         }

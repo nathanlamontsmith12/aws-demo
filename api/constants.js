@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export const ONE_GB = 1000 * 1000 * 1000;
 
 export const DOCUMENT_UPLOAD_STATUSES = {
@@ -21,9 +24,11 @@ export const CORE_TABLE_NAMES = [
     "documents"
 ];
 
+export const S3_BUCKET = `${process.env.S3_BUCKET}`;
+
 export const S3_TARGETS = {
-    initial: `${process.env.S3_BUCKET}/${process.env.S3_INITIAL_FOLDER}`,
-    reports: `${process.env.S3_BUCKET}/${process.env.S3_REPORTS_FOLDER}`,
-    quarantine: `${process.env.S3_BUCKET}/${process.env.S3_QUARANTINE_FOLDER}`,
-    promote: `${process.env.S3_BUCKET}/${process.env.S3_PROMOTE_FOLDER}`
+    initial: `${process.env.S3_INITIAL_FOLDER}`,
+    reports: `${process.env.S3_REPORTS_FOLDER}`,
+    quarantine: `${process.env.S3_QUARANTINE_FOLDER}`,
+    promote: `${process.env.S3_PROMOTE_FOLDER}`
 };

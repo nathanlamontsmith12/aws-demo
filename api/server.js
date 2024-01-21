@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import http from "http";
 import cors from "cors";
@@ -11,8 +13,6 @@ import { typeDefs } from "./graphql/schema.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { insertData, knex } from "./db.js";
 import { ONE_GB } from "./constants.js";
-
-dotenv.config();
 
 const { json } = bodyParser;
 

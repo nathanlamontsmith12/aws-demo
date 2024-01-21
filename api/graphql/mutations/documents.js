@@ -1,3 +1,4 @@
+import { uploadFile } from "../../file-storage/index.js";
 import DocumentModels from "../../models/Document.js";
 import { handleMutationError } from "./_mutation-helpers.js";
 
@@ -19,13 +20,17 @@ export const createDocument = async (_root, variables, { insertData }) => {
         }, DocumentModels);
 
         const newDocument = insertion.rows[0];
-        // const documentId = newDocument.id;
+        const documentId = newDocument.id;
 
-        console.log("FILE :: ", file, "\n", newDocument);
+        const onSuccessfulUpload = ({ result }) => {
+            console.log(result);
+        };
 
+        await uploadFile(documentId, file, { callback: onSuccessfulUpload });
+        
         return {
             success: true,
-            message: "Successfully created document"
+            message: "Upload underway"
         };
     } catch (err) {
         return handleMutationError(err, "Error when attempting to create document");
