@@ -8,6 +8,7 @@ import {
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { createUploadLink } from "apollo-upload-client";
+import { GRAPHQL_ENDPOINT } from "./constants.js";
 import { App } from "./App.jsx";
 
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
@@ -26,8 +27,10 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
     }
 });
 
+console.log(GRAPHQL_ENDPOINT);
+
 const fileUploadLink = createUploadLink({
-    uri: "http://localhost:4000/graphql",
+    uri: GRAPHQL_ENDPOINT,
     credentials: "include",
     headers: {
         "Apollo-Require-Preflight": true,

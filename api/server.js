@@ -45,7 +45,15 @@ app.use(
     })
 );
 
-httpServer.listen({ port: 4000 }, () => {
+app.use(
+    "/ping",
+    (req, res) => {
+        console.log("Receiving request :: ", req.headers);
+        res.status(200).send("Hello");
+    }
+);
+
+httpServer.listen({ port: process.env.SERVER_PORT }, () => {
     const date = new Date();
-    console.log(`${date} :: AWS DEMO api is running on port 4000`);
+    console.log(`${date} :: AWS DEMO api is running on port ${process.env.SERVER_PORT}`);
 });

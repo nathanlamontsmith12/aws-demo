@@ -20,3 +20,10 @@ export const DEFAULT_DATA_QUALITY_STATUS = DATA_QUALITY_STATUSES.pending;
 export const CORE_TABLE_NAMES = [
     "documents"
 ];
+
+export const S3_TARGETS = {
+    initial: `${process.env.S3_BUCKET}/${process.env.S3_INITIAL_FOLDER}`,
+    reports: `${process.env.S3_BUCKET}/${process.env.S3_REPORTS_FOLDER}`,
+    quarantine: `${process.env.S3_BUCKET}/${process.env.S3_QUARANTINE_FOLDER}`,
+    promote: `${process.env.S3_BUCKET}/${process.env.S3_PROMOTE_FOLDER}`
+};
