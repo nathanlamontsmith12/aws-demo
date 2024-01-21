@@ -7,11 +7,13 @@ const UPLOAD_MUTATION = gql`
         $file: Upload!
         $name: String!
         $size: Int!
+        $type: String!
         $dqFlag: Boolean 
     ) {
         createDocument (
             file: $file
             name: $name 
+            type: $type
             size: $size 
             dqFlag: $dqFlag
         ) {

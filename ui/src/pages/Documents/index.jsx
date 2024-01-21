@@ -7,7 +7,7 @@ import { Spacer } from "../../components/Spacer/index.jsx";
 
 
 export const Documents = () => {
-    const { loading, error, data } = useQuery(getDocuments)
+    const { loading, error, data, refetch } = useQuery(getDocuments)
 
     if (error) {
         console.log(error);
@@ -16,14 +16,17 @@ export const Documents = () => {
 
     return (
         <div>
-            <h1>All Documents</h1>
+            <h1 className="big-text">All Documents</h1>
             <Spacer margin={{ top: "20px" }}>
-                <DocumentUpload />
+                <DocumentUpload 
+                    afterUpload={refetch} 
+                />
             </Spacer>
             <Spacer margin={{ top: "15px" }}>
                 <DocumentsTable 
                     documents={data?.documents}
                     loading={loading}
+                    refetch={refetch}
                 />
             </Spacer>
         </div>

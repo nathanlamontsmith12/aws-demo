@@ -6,8 +6,11 @@ export const documentsTable = async (knex) => {
             .references("nodes.id");
         table.string("name")
             .notNullable();
-        table.bigInteger("size")
+        table.integer("size")
             .comment("Size of the uploaded file, in bytes")
+            .notNullable();
+        table.string("type")
+            .comment("File type of the uploaded file")
             .notNullable();
         table.string("upload_status")
             .comment("Status of the upload in terms of S3")

@@ -5,10 +5,12 @@ export const getDocuments = gql`
         documents {
             id
             name
+            type
             size 
             uploadStatus
             dqFlag
             dqStatus
+            canDownload 
         }
     }
 `;

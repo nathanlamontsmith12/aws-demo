@@ -1,5 +1,5 @@
 import React from "react";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 
 
 export const DocumentsTable = ({ documents, loading }) => {
@@ -8,6 +8,11 @@ export const DocumentsTable = ({ documents, loading }) => {
             title: "Filename",
             dataIndex: "name",
             key: "name"
+        },
+        {
+            title: "Type",
+            dataIndex: "type",
+            key: "type"
         },
         {
             title: "Size",
@@ -28,11 +33,19 @@ export const DocumentsTable = ({ documents, loading }) => {
                     ? dqStatus
                     : "N/A"
             }
+        },
+        {
+            title: "Action",
+            key: "action",
+            render: ({ canDownload }) => {
+                console.log(canDownload);
+                return <Button disabled={!canDownload} >Download</Button>
+            }
         }
     ];
     
     return (
-        <div style={{ width: "900px" }}>
+        <div style={{ width: "1200px" }}>
             <Table 
                 rowKey={"id"}
                 loading={loading}

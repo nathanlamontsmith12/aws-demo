@@ -6,12 +6,14 @@ export const typeDefs = `#graphql
     type Document {
         id: ID
         name: String
+        type: String 
         size: Int
         uploadStatus: String
         dqFlag: Boolean 
         dqStatus: String 
         createdAt: Date 
         updatedAt: Date 
+        canDownload: Boolean 
     }
 
     type MutationResponse {
@@ -29,6 +31,7 @@ export const typeDefs = `#graphql
             file: Upload!
             name: String!
             size: Int!
+            type: String!
             dqFlag: Boolean
         ): MutationResponse
     }

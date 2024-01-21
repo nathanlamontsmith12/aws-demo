@@ -3,14 +3,23 @@
     margin: 0;
 }
 
-h1 {
+.big-text {
     font-size: xx-large;
+}
+
+.medium-text {
+    font-size: large;
 }
 
 .flex-center {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.flex-row-between {
+    display: flex;
+    justify-content: space-between;
 }
 
 .flex-column-center {

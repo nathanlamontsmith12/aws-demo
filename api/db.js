@@ -15,7 +15,9 @@ export const insertData = async (input, models) => {
     for (let i = 0; i < dataArray.length; i++) {
         const { table, rows } = dataArray[i];
         const insertionInArray = await knex(table).insert(rows).returning("*");
-        insertions.push(insertionInArray[0]);
+        if (table !== "nodes") {
+            insertions.push({ table, rows: insertionInArray });
+        }
     }
     return singleInsertion ? insertions[0] : insertions;
 };

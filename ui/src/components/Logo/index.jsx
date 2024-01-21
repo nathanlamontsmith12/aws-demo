@@ -13,7 +13,7 @@ export const Logo = () => {
                 alignItems: "center"
             }}
         >
-            <h1>DEMO</h1>
+            <h1 className="big-text">DEMO</h1>
         </div>
     );
 };
