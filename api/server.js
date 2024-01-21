@@ -58,7 +58,8 @@ app.use(
     "/document-upload-complete/:documentId",
     async (req, res) => {
         try {
-            await updateDocumentOnUpload(req.params.id);
+            console.log("\nReceiving notification :: document upload complete :: ", req.params.documentId);
+            await updateDocumentOnUpload(req.params.documentId);
             res.status(200).send("Complete");
         } catch (err) {
             console.log(err);

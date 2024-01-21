@@ -82,11 +82,11 @@ export const downloadFile = (documentId, target) => {
 export const updateDocumentOnUpload = (documentId) => {
     return knex("documents")
         .where({ id: documentId })
-        .update({ dq_status: DOCUMENT_UPLOAD_STATUSES.uploaded });
+        .update({ upload_status: DOCUMENT_UPLOAD_STATUSES.uploaded });
 };
 
 export const updateDocumentOnError = (documentId) => {
     return knex("documents")
         .where({ id: documentId })
-        .update({ dq_status: DOCUMENT_UPLOAD_STATUSES.error });
+        .update({ upload_status: DOCUMENT_UPLOAD_STATUSES.error });
 };

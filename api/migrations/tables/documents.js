@@ -1,3 +1,5 @@
+import { DOCUMENT_UPLOAD_STATUSES } from "../../constants.js";
+
 export const documentsTable = async (knex) => {
     await knex.schema.createTable("documents", (table) => {
         table.comment("Data about a file that has been uploaded");
@@ -14,7 +16,7 @@ export const documentsTable = async (knex) => {
             .notNullable();
         table.string("upload_status")
             .comment("Status of the upload in terms of S3")
-            .defaultTo("uploading");
+            .defaultTo(DOCUMENT_UPLOAD_STATUSES.uploading);
         table.boolean("dq_flag")
             .comment("Whether or not document should undergo data quality checks")
             .defaultTo(false);
