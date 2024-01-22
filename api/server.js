@@ -54,13 +54,17 @@ app.use(
         try {
             const verdict = req.params.verdict;
             const documentId = req.params.documentId;
-            console.log("\nReceiving notification :: document upload complete :: ", req.params.documentId);
-            if (verdict === "innocent") {
+            console.log("\n\nReceiving notification :: document upload complete :: ", req.params.documentId);
+            console.log(" :: Result :: ", verdict);
+            
+            if (verdict === "error") {
+                await updateDocumentOnError(documentId);
+            } else if (verdict === "innocent") {
                 await promoteFile(documentId);
             } else {
-                await updateDocumentOnError(documentId);
                 await imprisonFile(documentId);
             }
+
             res.status(200).send("Complete");
         } catch (err) {
             console.log(err);

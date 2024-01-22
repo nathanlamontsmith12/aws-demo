@@ -15,7 +15,7 @@ const nonBlockingUpload = async (params, documentId, callback) => {
         execute(callback, { result });
     } catch (err) {
         console.log("ERROR during 'nonBlockingUpload' :: ", err);
-        updateDocumentOnError(documentId);
+        await updateDocumentOnError(documentId);
         execute(callback, { error: err });
     }
 };
@@ -68,41 +68,39 @@ const stageFileForUpload = async (documentId, file, { target, callback }) => {
     }
 };
 
-export const uploadFile = async (documentId, file, { target, callback }) => {
-    const targetToUse = target ? target : DEFAULT_TARGET;
-    console.log("Attempting to upload file :: ", documentId, file, target);
-    await stageFileForUpload(documentId, file, { target: targetToUse, callback });
+const handleUploadError = async (documentId) => {
+    try {
+        await updateDocumentOnError(documentId);
+    } catch (err) {
+        console.log("Failed to update document status to error :: ", documentId);
+        console.log(err);
+    }
 };
+
+
+
+// EXPORTS :: 
+
+export const uploadFile = async (documentId, file, options = {}) => { 
+    try {
+        const { target, callback } = options;
+        const targetToUse = target ? target : DEFAULT_TARGET;
+        console.log("Attempting to upload file :: ", documentId, file, target);
+        await stageFileForUpload(documentId, file, { target: targetToUse, callback });
+    } catch (err) {
+        console.log(err);
+        await handleUploadError(err);
+    }
+};
+
 
 export const downloadFile = (documentId, target) => {
     const targetToUse = target ? target : DEFAULT_TARGET;
     console.log(documentId, targetToUse);
 };
 
-export const updateDocumentOnUpload = (documentId) => {
-    return knex("documents")
-        .where({ id: documentId })
-        .update({ upload_status: DOCUMENT_UPLOAD_STATUSES.uploaded });
-};
 
-export const updateDocumentOnError = (documentId) => {
-    return knex("documents")
-        .where({ id: documentId })
-        .update({ 
-            upload_status: DOCUMENT_UPLOAD_STATUSES.error, 
-            dq_flag: false
-        });
-};
-
-export const updateDocumentDQStatus = (documentId, dqStatus) => {
-    return knex("documents")
-        .where({ id: documentId })
-        .update({ 
-            dq_status: dqStatus
-        });
-};
-
-const copyFile = async (documentId, { bucket, source, destination }) => {
+export const copyFile = async (documentId, { bucket, source, destination }) => {
     try {
         await FileStorage.copyObject({
             Bucket: `${bucket}/${destination}`,
@@ -116,7 +114,18 @@ const copyFile = async (documentId, { bucket, source, destination }) => {
     } 
 };
 
-export const imprisonFile = (documentId) => {
+
+
+// Send to repository (refactoring -- later :: ) :: 
+
+export const imprisonFile = async (documentId) => {
+    await knex("documents")
+        .where({ id: documentId })
+        .update({ 
+            upload_status: DOCUMENT_UPLOAD_STATUSES.jailed, 
+            dq_flag: false
+        });
+
     return copyFile(documentId, { 
         bucket: S3_BUCKET,
         source: S3_TARGETS.initial,
@@ -124,10 +133,37 @@ export const imprisonFile = (documentId) => {
     });
 };
 
-export const promoteFile = (documentId) => {
+export const promoteFile = async (documentId) => {
     return copyFile(documentId, {
         bucket: S3_BUCKET,
         source: S3_TARGETS.initial,
         destination: S3_TARGETS.promote
     });
+};
+
+export const updateDocumentOnUpload = async (documentId) => {
+    return knex("documents")
+        .where({ id: documentId })
+        .update({ upload_status: DOCUMENT_UPLOAD_STATUSES.uploaded });
+};
+
+export const updateDocumentOnError = async (documentId) => {
+    if (documentId) {
+        return knex("documents")
+            .where({ id: documentId })
+            .update({ 
+                upload_status: DOCUMENT_UPLOAD_STATUSES.error, 
+                dq_flag: false
+            });
+    } else {
+        return false;
+    }
+};
+
+export const updateDocumentDQStatus = async (documentId, dqStatus) => {
+    return knex("documents")
+        .where({ id: documentId })
+        .update({ 
+            dq_status: dqStatus
+        });
 };

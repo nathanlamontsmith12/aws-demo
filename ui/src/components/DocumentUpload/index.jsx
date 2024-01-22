@@ -6,8 +6,8 @@ import { UploadModal } from "./modal.jsx";
 import { DataQualityToggle } from "./toggle.jsx";
 
 
-export const DocumentUpload = ({ startOpen }) => {
-    const [modalOpen, setModalOpen] = useState( startOpen ? true : false);
+export const DocumentUpload = ({ startOpen, afterUpload }) => {
+    const [modalOpen, setModalOpen] = useState( startOpen === true ? true : false);
     const [newDocument, setNewDocument] = useState(null);
     const [dataQuality, setDataQuality] = useState(false);
 
