@@ -11,7 +11,6 @@ export const Documents = () => {
     const { loading, error, data, refetch } = useQuery(getDocuments)
 
     if (error) {
-        console.log(error);
         return <ErrorMessage />
     }
 

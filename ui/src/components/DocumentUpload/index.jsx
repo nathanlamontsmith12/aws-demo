@@ -1,94 +1,82 @@
 import React, { useState } from "react";
-import { Button, Modal, Upload } from "antd";
 import { useUpload } from "../../mutations/useUpload.js";
-import { Spacer } from "../Spacer/index.jsx";
-import { DataQualityToggle } from "./dataQualityToggle.jsx";
+import { UploadDragger } from "./dragger.jsx";
+import { UploadButton } from "./button.jsx";
+import { UploadModal } from "./modal.jsx";
+import { DataQualityToggle } from "./toggle.jsx";
 
-const { Dragger } = Upload;
 
-
-export const DocumentUpload = ({ afterUpload }) => {
-    const [modalOpen, setModalOpen] = useState(false);
-    const [name, setName] = useState(null);
-    const [type, setType] = useState(null);
-    const [size, setSize] = useState(null);
+export const DocumentUpload = ({ startOpen }) => {
+    const [modalOpen, setModalOpen] = useState( startOpen ? true : false);
+    const [newDocument, setNewDocument] = useState(null);
     const [dataQuality, setDataQuality] = useState(false);
-    const [file, setFile] = useState(null);
 
-    const [uploadFile, { loading }, isValidUpload] = useUpload({
+    const [uploadFile, { loading }, isValidInput] = useUpload({
         successMessage: "File upload underway!",
         failureMessage: "File upload unsuccessful",
         errorMessage: "A technical error prevented file upload"
     });
 
+    const documentToUse = newDocument ?? {};
+    const {
+        name,
+        type,
+        size,
+        file
+    } = documentToUse;
+
     const reset = () => {
-        setName(null);
-        setType(null);
-        setSize(null);
-        setDataQuality(false);
-        setFile(null);
         setModalOpen(false);
+        setNewDocument(null);
+        setDataQuality(false);
     };
+
+    const handleUpload = async () => {
+        try {
+            const input = {
+                name,
+                type,
+                size,
+                file,
+                dqFlag: dataQuality
+            };
+            await uploadFile({ 
+                variables: input
+            });
+            if (typeof afterUpload === "function") {
+                afterUpload();
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            reset();
+        }
+    };
+
+    // disable modal OK button if upload request is underway (loading is true) OR if the input is invalid :: 
+    const okButtonDisabled = (loading === true) || (isValidInput({ name, size, file }) !== true )
 
     return (
         <>
-            <Button onClick={() => setModalOpen(true)}>
-                Upload
-            </Button>
-            <Modal 
-                open={modalOpen}
+            <UploadButton openModal={() => setModalOpen(true)} />
+            <UploadModal 
+                modalOpen={modalOpen}
                 loading={loading}
-                onCancel={reset}
-                destroyOnClose={true}
-                maskClosable={false}
-                closable={false}
-                okButtonProps={{ 
-                    disabled: isValidUpload({ name, size, file }) !== true 
-                }}
-                onOk={async () => {
-                    try {
-                        await uploadFile({ 
-                            variables: {
-                                name,
-                                size,
-                                type,
-                                dqFlag: dataQuality,
-                                file: file
-                            }
-                        });
-                        if (typeof afterUpload === "function") {
-                            afterUpload();
-                        }
-                    } finally {
-                        reset();
-                    }
-                }}
+                handleUpload={handleUpload}
+                reset={reset}
+                disabled={okButtonDisabled}
             >
-                <>
-                    <Dragger
-                        name="file"
-                        multiple={false}
-                        customRequest={() => {
-                            // To stop default xhr request  
-                        }}
-                        maxCount={1}
-                        onChange={({ file }) => {
-                            setName(file.name);
-                            setType(file.type);
-                            setSize(file.size);
-                            setFile(file.originFileObj);
-                        }}
-                    >
-                        <Spacer className="flex-center" height={"100px"}>
-                            <span className="medium-text">Click or Drag File</span>
-                        </Spacer>
-                    </Dragger>
-                    <DataQualityToggle 
-                        dataQuality={dataQuality} 
-                        setDataQuality={setDataQuality} 
-                    />
-                </>
-            </Modal>
+                <UploadDragger 
+                    setNewDocument={setNewDocument}
+                    newDocument={newDocument}
+                />
+                <DataQualityToggle 
+                    dataQuality={dataQuality}
+                    setDataQuality={setDataQuality}
+                    filetype={type}
+                    disabledMessage={"Invalid File Type"}
+                />
+            </UploadModal>
         </>
     );
 };

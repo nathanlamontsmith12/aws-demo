@@ -11,6 +11,9 @@ import { getDocument, getDocuments } from "./queries/documents.js";
 // ___ MUTATIONS ___
 import { createDocument } from "./mutations/documents.js";
 
+// ___ OTHER ___ 
+import { VALID_DATA_QUALITY_FILE_TYPES } from "../constants.js";
+
 
 export const resolvers = {
     Date: dateScalar,
@@ -18,7 +21,10 @@ export const resolvers = {
     Document: DocumentTypeResolver,
     Query: {
         document: getDocument,
-        documents: getDocuments 
+        documents: getDocuments, 
+        enums: () => ({ 
+            dataQualityFileTypes: VALID_DATA_QUALITY_FILE_TYPES
+        })
     },
     Mutation: {
         createDocument

@@ -32,3 +32,9 @@ export const S3_TARGETS = {
     jail: `${process.env.S3_JAIL_FOLDER}`,
     promote: `${process.env.S3_PROMOTE_FOLDER}`
 };
+
+export const VALID_DATA_QUALITY_FILE_TYPES = [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+    "text/csv"
+];

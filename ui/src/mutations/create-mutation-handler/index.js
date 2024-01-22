@@ -101,7 +101,6 @@ const handleMutation = async ({
 
         return result;
     } catch (err) {
-        console.log(err);
         const errorNote = determineNote(errorMessage, null, DEFAULT_ERROR_MESSAGE);
         pinUpNote({ content: errorNote, type: "error" });
     }

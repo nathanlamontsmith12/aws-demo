@@ -2,6 +2,7 @@ export const typeDefs = `#graphql
 
     scalar Date
     scalar Upload
+    scalar Enum
 
     type Document {
         id: ID
@@ -21,9 +22,14 @@ export const typeDefs = `#graphql
         message: String
     }
 
+    type EnumSet {
+        dataQualityFileTypes: Enum
+    }
+
     type Query {
         document(id: ID): Document
         documents: [Document]
+        enums: EnumSet
     }
 
     type Mutation {
