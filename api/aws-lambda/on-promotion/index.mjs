@@ -3,51 +3,71 @@ import { S3 } from '@aws-sdk/client-s3';
 const s3 = new S3();
 
 const uploadDQReport = async (bucket, key, report) => {
-    await s3.putObject({ 
-        Bucket: bucket,
-        Key: `${process.env.DQ_REPORT_FOLDER}/${key}`,
-        Body: JSON.stringify(report),
-        ContentType: "application/json; charset=utf-8"
-    }).promise();
+    if (report) { 
+        await s3.putObject({ 
+            Bucket: bucket,
+            Key: `${process.env.DQ_REPORT_FOLDER}/${key}`,
+            Body: JSON.stringify(report),
+            ContentType: "application/json; charset=utf-8"
+        }).promise();
+    }
 };
 
 const generateFakeReport = (result, filename) => {
-    const d = new Date();
-    const fakeIssues = result === "pass" ? {} : {
-        critical: [
-            { type: "Missing Column", col: "Submitter Attestation" } 
-        ],
-        moderate: [
-            { type: "Incorrect Date Format", col: "Due Date" },
-            { type: "Incorrect Date Format", col: "Submitted On" },
-            { type: "Missing Required Values", col: "Submitter Name" } 
-        ], 
-        minor: [
-            { type: "Sort Order", col: "Submitter Name" }
-        ]
-    };
-    return {
-        filename,
-        reportGenerated: d.toISOString(),
-        result, 
-        issues: fakeIssues
-    };
+    try {
+        const d = new Date();
+        const fakeIssues = result === "pass" ? {} : {
+            critical: [
+                { type: "Missing Column", col: "Submitter Attestation" } 
+            ],
+            moderate: [
+                { type: "Incorrect Date Format", col: "Due Date" },
+                { type: "Incorrect Date Format", col: "Submitted On" },
+                { type: "Missing Required Values", col: "Submitter Name" } 
+            ], 
+            minor: [
+                { type: "Sort Order", col: "Submitter Name" }
+            ]
+        };
+        return {
+            filename,
+            reportGenerated: d.toISOString(),
+            result, 
+            issues: fakeIssues
+        };
+    } catch (err) {
+        console.log("ERROR running generateFakeReport :: ");
+        console.log(err);
+        return err;
+    }
 };
 
 const fakeDataQualityAnalysis = (filename) => {
-    const result = filename.toLowerCase().includes("f")
-        ? "fail"
-        : "pass";
+    try {
+        const result = filename.toLowerCase().includes("f")
+            ? "fail"
+            : "pass";
+            
+        const reportOrError = generateFakeReport(result, filename);
+        if (reportOrError instanceof Error) { 
+            throw reportOrError;
+        }
 
-    return { 
-        result, 
-        report: generateFakeReport(result, filename) 
-    };
+        return { 
+            result, 
+            report: reportOrError  
+        };
+    } catch (err) {
+        return {
+            result: "error",
+            report: null
+        }
+    }
 };
 
 
 export const handler = async (event) => {
-    console.log("\n\n Running Lambda 'on-initial-upload :: ");
+    console.log("\n\n Running Lambda 'on-promotion :: ");
     const bucket = event.Records[0].s3.bucket.name;
     const key = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
     const params = {
@@ -60,13 +80,25 @@ export const handler = async (event) => {
         const dqFlag = Metadata.dq_flag;
         const documentId = Metadata.document_id;
         const filename = Metadata.filename;
+        console.log("Document ID :: ", documentId);
+        console.log("Filename :: ", filename);
+        console.log("\n-- Notifying that file has been promoted and is safe to download --");
         // notify that file has landed in promote bucket and is OK to be downloaded :: 
         await fetch(`${process.env.API_URL}/${process.env.DOCUMENT_PROMOTED_ENDPOINT}/${documentId}`);
 
         // perform additional data quality checks if flagged for DQ :: 
         if (dqFlag === "true") {
+            console.log("\nPerforming Data Quality checks...");
             const { result, report } = fakeDataQualityAnalysis(filename);
-            await uploadDQReport(bucket, documentId, report);
+
+            console.log("\nRESULT :: ", result);
+            if (result === "fail") {
+                console.log("\nREPORT :: ");
+                console.log(report);
+                console.log("\n\nUploading report...");
+                await uploadDQReport(bucket, documentId, report);
+            }
+
             /* global fetch */
             await fetch(`${process.env.API_URL}/${process.env.DATA_QUALITY_ENDPOINT}/${documentId}/${result}`);
         } 

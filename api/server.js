@@ -55,8 +55,8 @@ app.use(
             const verdict = req.params.verdict;
             const documentId = req.params.documentId;
             console.log("\n\nReceiving notification :: document upload complete :: ", req.params.documentId);
-            console.log(" :: Result :: ", verdict);
-            
+            console.log(" -- Result :: ", verdict);
+
             if (verdict === "error") {
                 await updateDocumentOnError(documentId);
             } else if (verdict === "innocent") {
@@ -76,7 +76,9 @@ app.use(
 app.use(
     "/document-ready/:documentId",
     async (req, res) => {
-        await updateDocumentOnUpload(req.params.documentId);
+        const documentId = req.params.documentId;
+        console.log("\n\nReceiving notification :: document promoted :: ", documentId);
+        await updateDocumentOnUpload(documentId);
         res.status(200).send("Complete");
     }
 );
@@ -84,11 +86,22 @@ app.use(
 app.use(
     "/data-quality-result/:documentId/:result",
     async (req, res) => {
-        const dqStatus = req.params.result === "pass" 
-            ? DATA_QUALITY_STATUSES.success 
-            : DATA_QUALITY_STATUSES.failed;
+        const result = req.params.result;
+        const documentId = req.params.documentId;
 
-        await updateDocumentDQStatus(req.params.documentId, dqStatus);
+        console.log("\n\nReceiving notification :: data quality finished :: ", documentId);
+        console.log(" -- Result :: ", result);
+
+        let dqStatus;
+        if (result === "error") {
+            dqStatus = DATA_QUALITY_STATUSES.error;
+        } else if (result === "pass") {
+            dqStatus = DATA_QUALITY_STATUSES.success;
+        } else {
+            dqStatus = DATA_QUALITY_STATUSES.failed;
+        }
+
+        await updateDocumentDQStatus(documentId, dqStatus);
         res.status(200).send("Complete");
     }
 );
