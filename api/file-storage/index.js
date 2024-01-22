@@ -88,5 +88,46 @@ export const updateDocumentOnUpload = (documentId) => {
 export const updateDocumentOnError = (documentId) => {
     return knex("documents")
         .where({ id: documentId })
-        .update({ upload_status: DOCUMENT_UPLOAD_STATUSES.error });
+        .update({ 
+            upload_status: DOCUMENT_UPLOAD_STATUSES.error, 
+            dq_flag: false
+        });
+};
+
+export const updateDocumentDQStatus = (documentId, dqStatus) => {
+    return knex("documents")
+        .where({ id: documentId })
+        .update({ 
+            dq_status: dqStatus
+        });
+};
+
+const copyFile = async (documentId, { bucket, source, destination }) => {
+    try {
+        await FileStorage.copyObject({
+            Bucket: `${bucket}/${destination}`,
+            CopySource: `${bucket}/${source}/${documentId}`,
+            Key: documentId
+        }).promise();
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    } 
+};
+
+export const imprisonFile = (documentId) => {
+    return copyFile(documentId, { 
+        bucket: S3_BUCKET,
+        source: S3_TARGETS.initial,
+        destination: S3_TARGETS.jail
+    });
+};
+
+export const promoteFile = (documentId) => {
+    return copyFile(documentId, {
+        bucket: S3_BUCKET,
+        source: S3_TARGETS.initial,
+        destination: S3_TARGETS.promote
+    });
 };

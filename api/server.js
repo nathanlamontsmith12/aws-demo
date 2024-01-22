@@ -12,8 +12,8 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { typeDefs } from "./graphql/schema.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { insertData, knex } from "./db.js";
-import { ONE_GB } from "./constants.js";
-import { updateDocumentOnUpload } from "./file-storage/index.js";
+import { DATA_QUALITY_STATUSES, ONE_GB } from "./constants.js";
+import { imprisonFile, promoteFile, updateDocumentDQStatus, updateDocumentOnError, updateDocumentOnUpload } from "./file-storage/index.js";
 
 const { json } = bodyParser;
 
@@ -46,25 +46,46 @@ app.use(
     })
 );
 
-app.use(
-    "/ping",
-    (req, res) => {
-        console.log("Receiving request :: ", req.headers);
-        res.status(200).send("Hello");
-    }
-);
 
+// Endpoints To be hit by AWS Lambda Functions Triggered by S3 uploads :: 
 app.use(
-    "/document-upload-complete/:documentId",
+    "/document-upload-complete/:documentId/:verdict",
     async (req, res) => {
         try {
+            const verdict = req.params.verdict;
+            const documentId = req.params.documentId;
             console.log("\nReceiving notification :: document upload complete :: ", req.params.documentId);
-            await updateDocumentOnUpload(req.params.documentId);
+            if (verdict === "innocent") {
+                await promoteFile(documentId);
+            } else {
+                await updateDocumentOnError(documentId);
+                await imprisonFile(documentId);
+            }
             res.status(200).send("Complete");
         } catch (err) {
             console.log(err);
             res.status(400).send("Error");
         }
+    }
+);
+
+app.use(
+    "/document-ready/:documentId",
+    async (req, res) => {
+        await updateDocumentOnUpload(req.params.documentId);
+        res.status(200).send("Complete");
+    }
+);
+
+app.use(
+    "/data-quality-result/:documentId/:result",
+    async (req, res) => {
+        const dqStatus = req.params.result === "pass" 
+            ? DATA_QUALITY_STATUSES.success 
+            : DATA_QUALITY_STATUSES.failed;
+
+        await updateDocumentDQStatus(req.params.documentId, dqStatus);
+        res.status(200).send("Complete");
     }
 );
 

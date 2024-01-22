@@ -29,6 +29,6 @@ export const S3_BUCKET = `${process.env.S3_BUCKET}`;
 export const S3_TARGETS = {
     initial: `${process.env.S3_INITIAL_FOLDER}`,
     reports: `${process.env.S3_REPORTS_FOLDER}`,
-    quarantine: `${process.env.S3_QUARANTINE_FOLDER}`,
+    jail: `${process.env.S3_JAIL_FOLDER}`,
     promote: `${process.env.S3_PROMOTE_FOLDER}`
 };
