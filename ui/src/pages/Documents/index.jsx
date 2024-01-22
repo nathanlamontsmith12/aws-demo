@@ -1,14 +1,17 @@
 import React from "react";
-import { useQuery } from "@apollo/client"
 import { getDocuments } from "./queries.js";
 import { DocumentsTable } from "./DocumentsTable.jsx";
 import { DocumentUpload } from "../../components/DocumentUpload/index.jsx";
 import { Spacer } from "../../components/Spacer/index.jsx";
 import { ErrorMessage } from "../../components/ErrorMessage/index.jsx";
+import { useActiveTracker } from "../../hooks/useActiveTracker.js";
 
 
 export const Documents = () => {
-    const { loading, error, data, refetch } = useQuery(getDocuments)
+    const [documents, { error, refetch }] = useActiveTracker({
+        query: getDocuments,
+        transform: (data) => data?.documents
+    });
 
     if (error) {
         return <ErrorMessage />
@@ -24,8 +27,8 @@ export const Documents = () => {
             </Spacer>
             <Spacer margin={{ top: "15px" }}>
                 <DocumentsTable 
-                    documents={data?.documents}
-                    loading={loading}
+                    documents={documents}
+                    loading={!documents}
                     refetch={refetch}
                 />
             </Spacer>

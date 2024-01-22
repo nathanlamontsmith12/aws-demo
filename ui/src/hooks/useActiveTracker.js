@@ -13,15 +13,17 @@ const getPollInterval = (interval) => {
 
 export const useActiveTracker = ({
     query, 
+    stopOnError = true, 
     onFetch = null, 
     stopIf = null,
-    transform = null, 
+    transform = null,
     interval = null,
     defaultData = null
 }) => {
     const shouldTransformDataOnFetch = typeof transform === "function";
 
     const [latestData, setLatestData] = useState(defaultData);
+    const [mounting, setMounting] = useState(true);
     const pollingIdRef = useRef(null);
 
     const { 
@@ -31,16 +33,25 @@ export const useActiveTracker = ({
     } = useQuery(query, { fetchPolicy: "no-cache" });
 
     useEffect(() => {
-        let id;
+        // sometimes react makes you do silly workarounds >.<
+        const timeoutId = setTimeout(() => {
+            clearTimeout(timeoutId);
+            setMounting(false);
+        }, 0);
+
         if (pollingIdRef.current === null) {
-            id = setInterval(refetch, getPollInterval(interval));
-            pollingIdRef.current = id;
+            pollingIdRef.current = setInterval(() => {
+                refetch();
+            }, getPollInterval(interval));
         }
 
         // clean-up function :: 
         return () => {
-            clearInterval(id);
-            clearInterval(pollingIdRef.current);
+            if (mounting !== true) {
+                // getting around the initial invocation of clean-up function 
+                // when component mounts :: 
+                clearInterval(pollingIdRef.current);
+            }
         };
     }, []);
 
@@ -64,6 +75,10 @@ export const useActiveTracker = ({
             }
         }
     }, [data]);
+
+    if (stopOnError === true && error) {
+        clearInterval(pollingIdRef.current);
+    }
     
     return [
         latestData, 
