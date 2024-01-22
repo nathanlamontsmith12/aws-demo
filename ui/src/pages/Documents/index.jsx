@@ -1,10 +1,10 @@
 import React from "react";
 import { getDocuments } from "./queries.js";
-import { DocumentsTable } from "./DocumentsTable.jsx";
 import { DocumentUpload } from "../../components/DocumentUpload/index.jsx";
 import { Spacer } from "../../components/Spacer/index.jsx";
 import { ErrorMessage } from "../../components/ErrorMessage/index.jsx";
 import { useActiveTracker } from "../../hooks/useActiveTracker.js";
+import { DocumentsTable } from "./DocumentsTable.jsx";
 
 
 export const Documents = () => {
