@@ -82,6 +82,7 @@ export const handler = async (event) => {
         const filename = Metadata.filename;
         console.log("Document ID :: ", documentId);
         console.log("Filename :: ", filename);
+        console.log("DQ FLAG :: ", dqFlag, typeof dqFlag);
         console.log("\n-- Notifying that file has been promoted and is safe to download --");
         // notify that file has landed in promote bucket and is OK to be downloaded :: 
         await fetch(`${process.env.API_URL}/${process.env.DOCUMENT_PROMOTED_ENDPOINT}/${documentId}`);

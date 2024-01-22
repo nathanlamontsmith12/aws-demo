@@ -51,10 +51,10 @@ const stageFileForUpload = async (documentId, file, { target, callback }) => {
                 document_name: document.name,
                 document_size: document.size.toString(),
                 document_type: document.type,
+                dq_flag: document.dq_flag.toString(),
                 filename: filename,
                 mimetype: mimetype,
-                encoding: encoding,
-                data_quality: document.dq_flag.toString()
+                encoding: encoding
             }
         };
 
