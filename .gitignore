@@ -3,6 +3,8 @@
 api/.DS_Store
 api/node_modules
 api/.env
+api/aws-lambda/**/node_modules
+api/aws-lambda/**/*.zip
 
 # Logs
 ui/logs
