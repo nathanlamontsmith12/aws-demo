@@ -1,15 +1,23 @@
-import { S3 } from '@aws-sdk/client-s3';
+import { S3, S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const s3 = new S3();
 
 const uploadDQReport = async (bucket, key, report) => {
-    if (report) { 
-        await s3.putObject({ 
-            Bucket: bucket,
-            Key: `${process.env.DQ_REPORT_FOLDER}/${key}`,
-            Body: JSON.stringify(report),
-            ContentType: "application/json; charset=utf-8"
-        }).promise();
+    try {
+        if (report) { 
+            const client = new S3Client();
+            const command = new PutObjectCommand({
+                Bucket: bucket,
+                Key: `${process.env.DQ_REPORT_FOLDER}/${key}`,
+                Body: JSON.stringify(report),
+                ContentType: "application/json; charset=utf-8"
+            })
+            const response = await client.send(command);
+            console.log("\n\nDQ Report Upload Response :: ", response);
+        }
+    } catch (err) {
+        console.log("ERROR uploading DQ Report :: ");
+        console.log(err);
     }
 };
 
@@ -105,8 +113,6 @@ export const handler = async (event) => {
         } 
     } catch (err) {
         console.log(err);
-        const message = `Error getting object ${key} from bucket ${bucket}. Make sure they exist and your bucket is in the same region as this function.`;
-        console.log(message);
-        throw new Error(message);
+        throw new Error(err);
     }
 };

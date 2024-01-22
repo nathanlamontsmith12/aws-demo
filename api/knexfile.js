@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 const customLogger = (message) => {
     const date = new Date();
     console.log(`${date} :: ${message}`);
