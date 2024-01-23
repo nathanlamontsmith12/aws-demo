@@ -12,8 +12,8 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { typeDefs } from "./graphql/schema.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { insertData, knex } from "./db.js";
-import { DATA_QUALITY_STATUSES, ONE_GB } from "./constants.js";
-import { imprisonFile, promoteFile, updateDocumentDQStatus, updateDocumentOnError, updateDocumentOnUpload } from "./file-storage/index.js";
+import { DATA_QUALITY_STATUSES, ONE_GB, S3_TARGETS } from "./constants.js";
+import { getFileForDownload, imprisonFile, promoteFile, updateDocumentDQStatus, updateDocumentOnError, updateDocumentOnUpload } from "./file-storage/index.js";
 
 const { json } = bodyParser;
 
@@ -105,6 +105,45 @@ app.use(
         res.status(200).send("Complete");
     }
 );
+
+app.use(
+    "/download-file/:documentId/:type",
+    async (req, res) => {
+        try {
+            const documentId = req.params.documentId;    
+            const target = req.params.type === "report"
+                ? S3_TARGETS.reports
+                : S3_TARGETS.promote;
+
+            const downloadResponse = await getFileForDownload(documentId, target);
+
+            const { 
+                success, 
+                stream, 
+                contentType, 
+                contentLength, 
+                filename 
+            } = downloadResponse;
+
+            if (success) {
+                res.attachment(filename);
+                res.contentType(contentType);
+                res.set({"Content-Length": contentLength});
+                stream
+                    .on("error", (err) => { 
+                        console.log("ERROR while attempting to stream file for client download :: ");
+                        console.log(err);
+                    })
+                    .pipe(res);
+            } else {
+                return res.status(500).send();
+            }
+        } catch (err) {
+            return res.status(500).send();
+        }
+    }
+);
+
 
 httpServer.listen({ port: process.env.SERVER_PORT }, () => {
     const date = new Date();
