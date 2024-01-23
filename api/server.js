@@ -127,7 +127,7 @@ app.use(
 );
 
 app.use(
-    "/data-quality-result/:documentId/:result",
+    "/data-quality-result/:documentId/:result/:reportName",
     async (req, res) => {
         const result = req.params.result;
         const documentId = req.params.documentId;
@@ -135,16 +135,17 @@ app.use(
         console.log("\n\nReceiving notification :: data quality finished :: ", documentId);
         console.log(" -- Result :: ", result);
 
-        let dqStatus;
+        let dqStatus, reportName;
         if (result === "error") {
             dqStatus = DATA_QUALITY_STATUSES.error;
         } else if (result === "pass") {
             dqStatus = DATA_QUALITY_STATUSES.success;
         } else {
             dqStatus = DATA_QUALITY_STATUSES.failed;
+            reportName = req.params.reportName;
         }
 
-        await updateDocumentDQStatus(documentId, dqStatus);
+        await updateDocumentDQStatus(documentId, dqStatus, reportName);
         res.status(200).send("Complete");
     }
 );

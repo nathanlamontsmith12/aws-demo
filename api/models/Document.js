@@ -14,7 +14,8 @@ const DocumentSchema = z.object({
     size: z.number().int().safe().positive(),
     uploadStatus: z.string().default(DEFAULT_UPLOAD_STATUS),
     dqFlag: z.boolean().default(false),
-    dqStatus: z.string().nullable().default(null)
+    dqStatus: z.string().nullable().default(null),
+    reportName: z.string().nullable().default(null)
 }).refine(
     ({ uploadStatus }) => Object.values(DOCUMENT_UPLOAD_STATUSES).includes(uploadStatus),
     { message: "Invalid upload status for new document" }
@@ -35,7 +36,8 @@ const AbstractDocument = (data) => {
     const dataToUse = {
         ...data,
         type: Boolean(data.type) && typeof data.type === "string" ? data.type : null,
-        dqStatus: data.dqFlag === true ? initialDQStatus : null
+        dqStatus: data.dqFlag === true ? initialDQStatus : null,
+        reportName: null
     };
 
     DocumentSchema.parse(dataToUse);

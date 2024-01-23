@@ -12,6 +12,7 @@ export const getDocuments = gql`
             dqStatus
             canDownload 
             hasReport 
+            reportName 
         }
     }
 `;

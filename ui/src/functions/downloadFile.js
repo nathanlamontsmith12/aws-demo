@@ -12,15 +12,7 @@ const getEndpoint = (id, type) => {
     return downloadEndpoint;
 };
 
-const getFilenameFromResponse = (res) => {
-    const filenameHeader = res.headers.get("Content-Disposition");
-    const filenameInQuotes = filenameHeader?.split?.("filename=")?.[1];
-    const filename = filenameInQuotes?.substring?.(1, filenameInQuotes.length - 1);
-    return filename;
-};
-
-const downloadFromResponse = async (res, name, updateProgress) => {
-    const filename = name && typeof name === "string" ? name : getFilenameFromResponse(res);
+const downloadFromResponse = async (res, filename, updateProgress) => {
     const totalContentLength = parseInt(res.headers.get("Content-Length"), 10);
     if (filename && typeof filename === "string") {
         // stream file from server :: 

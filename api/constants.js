@@ -39,3 +39,5 @@ export const VALID_DATA_QUALITY_FILE_TYPES = [
     "application/vnd.ms-excel",
     "text/csv"
 ];
+
+export const DEFAULT_REPORT_NAME = "dq-report.json";

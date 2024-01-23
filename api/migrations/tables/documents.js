@@ -22,6 +22,8 @@ export const documentsTable = async (knex) => {
             .defaultTo(false);
         table.string("dq_status")
             .comment("Status of the data quality process; NULL unless document's dq_flag is TRUE");
+        table.string("report_name")
+            .comment("The filename of the DQ report (if any) associated with this document");
         table.datetime("created_at")
             .defaultTo(knex.fn.now());
         table.datetime("updated_at")

@@ -7,7 +7,7 @@ const generateReportName = (filename) => {
         return "dq-report.json";
     }
 
-    const nameArray = ["dq-report-"].concat(filename.split("."));
+    const nameArray = "dq-report-".concat(filename).split(".");
     if (nameArray.length > 1) {
         nameArray.pop();
     }
@@ -33,9 +33,11 @@ const uploadDQReport = async (bucket, key, report, Metadata) => {
                 },
                 ContentType: "application/json; charset=utf-8"
             });
-            
+
             const response = await client.send(command);
+            console.log("\nReport Name :: ", reportName);
             console.log("\n\nDQ Report Upload Response :: ", response);
+            return reportName;
         }
     } catch (err) {
         console.log("ERROR uploading DQ Report :: ");
@@ -127,11 +129,17 @@ export const handler = async (event) => {
                 console.log("\nREPORT :: ");
                 console.log(report);
                 console.log("\n\nUploading report...");
-                await uploadDQReport(bucket, documentId, report, Metadata);
-            }
+                const reportName = await uploadDQReport(bucket, documentId, report, Metadata);
 
-            /* global fetch */
-            await fetch(`${process.env.API_URL}/${process.env.DATA_QUALITY_ENDPOINT}/${documentId}/${result}`);
+                // include report name as last parameter :: 
+                /* global fetch */
+                await fetch(`${process.env.API_URL}/${process.env.DATA_QUALITY_ENDPOINT}/${documentId}/${result}/${reportName}`);
+            } else {
+
+                // no report name :: 
+                /* global fetch */
+                await fetch(`${process.env.API_URL}/${process.env.DATA_QUALITY_ENDPOINT}/${documentId}/${result}`);
+            }
         } 
     } catch (err) {
         console.log(err);

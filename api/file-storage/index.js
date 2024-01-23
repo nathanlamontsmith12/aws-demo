@@ -191,10 +191,12 @@ export const updateDocumentOnError = async (documentId) => {
     }
 };
 
-export const updateDocumentDQStatus = async (documentId, dqStatus) => {
+export const updateDocumentDQStatus = async (documentId, dqStatus, reportName) => { 
     return knex("documents")
         .where({ id: documentId })
         .update({ 
-            dq_status: dqStatus
+            dq_status: dqStatus, 
+            // will be undefined (and ignored by knex.update) if document passed or errored out of DQ :: 
+            report_name: reportName 
         });
 };

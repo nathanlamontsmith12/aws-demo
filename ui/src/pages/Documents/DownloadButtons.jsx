@@ -8,10 +8,10 @@ const FILE_BUTTON_WIDTH = "70px";
 const DQ_REPORT_BUTTON_WIDTH = "70px";
 
 const downloadReport = (document) => {
-    const { id, name } = document;
+    const { id, reportName } = document;
     return downloadFile({
         id,
-        name,
+        name: reportName,
         type: "report"
     });
 };
