@@ -2,16 +2,38 @@ import { S3, S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const s3 = new S3();
 
-const uploadDQReport = async (bucket, key, report) => {
+const generateReportName = (filename) => {
+    if (!filename || typeof filename !== "string") {
+        return "dq-report.json";
+    }
+
+    const nameArray = ["dq-report-"].concat(filename.split("."));
+    if (nameArray.length > 1) {
+        nameArray.pop();
+    }
+    nameArray.push("json");
+    return nameArray.join(".");
+};
+
+const uploadDQReport = async (bucket, key, report, Metadata) => {
     try {
         if (report) { 
+            const filename = Metadata?.filename ?? Metadata?.document_name;
+            const reportName = generateReportName(filename);
+
             const client = new S3Client();
             const command = new PutObjectCommand({
                 Bucket: bucket,
                 Key: `${process.env.DQ_REPORT_FOLDER}/${key}`,
                 Body: JSON.stringify(report),
+                Metadata: {
+                    ...Metadata,
+                    document_name: reportName,
+                    filename: reportName
+                },
                 ContentType: "application/json; charset=utf-8"
-            })
+            });
+            
             const response = await client.send(command);
             console.log("\n\nDQ Report Upload Response :: ", response);
         }
@@ -105,7 +127,7 @@ export const handler = async (event) => {
                 console.log("\nREPORT :: ");
                 console.log(report);
                 console.log("\n\nUploading report...");
-                await uploadDQReport(bucket, documentId, report);
+                await uploadDQReport(bucket, documentId, report, Metadata);
             }
 
             /* global fetch */

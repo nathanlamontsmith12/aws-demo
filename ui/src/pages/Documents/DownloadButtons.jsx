@@ -2,9 +2,29 @@ import React from "react";
 import { Button } from "antd";
 import { DownloadOutlined, FileExclamationOutlined } from "@ant-design/icons";
 import { DATA_QUALITY_POLLING_STATUS, UPLOAD_POLLING_STATUS } from "../../constants.js";
+import { downloadFile } from "../../functions/downloadFile.js";
 
 const FILE_BUTTON_WIDTH = "70px";
 const DQ_REPORT_BUTTON_WIDTH = "70px";
+
+const downloadReport = (document) => {
+    const { id, name } = document;
+    return downloadFile({
+        id,
+        name,
+        type: "report"
+    });
+};
+
+const downloadDocument = (document) => {
+    const { id, name } = document;
+    return downloadFile({
+        id,
+        name,
+        type: "file"
+    });
+};
+
 
 export const DownloadButtons = ({ document }) => {
     const fileDisabled = document?.canDownload !== true;
@@ -24,6 +44,7 @@ export const DownloadButtons = ({ document }) => {
                 disabled={fileDisabled} 
                 loading={fileLoading}
                 icon={<DownloadOutlined />}
+                onClick={() => downloadDocument(document)}
                 style={{ width: FILE_BUTTON_WIDTH }}
             >
                 File
@@ -33,6 +54,7 @@ export const DownloadButtons = ({ document }) => {
                 disabled={dqDisabled} 
                 loading={dqLoading}
                 icon={<FileExclamationOutlined />}
+                onClick={() => downloadReport(document)}
                 style={{ width: DQ_REPORT_BUTTON_WIDTH }}
             >
                 DQ 

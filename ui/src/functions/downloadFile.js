@@ -1,4 +1,4 @@
-import { GRAPHQL_ENDPOINT } from "../constants.js";
+import { API_URL } from "../constants.js";
 
 
 // ___HELPER FUNCTIONS____ 
@@ -8,8 +8,7 @@ const getEndpoint = (id, type) => {
         ? "report"
         : "file";
     
-    const downloadEndpoint = `${GRAPHQL_ENDPOINT}/download-file/${id}/${typeToUse}`;
-    console.log("\n\nDOWNLOAD ENDPOINT :: ", downloadEndpoint);
+    const downloadEndpoint = `${API_URL}/download-file/${id}/${typeToUse}`;
     return downloadEndpoint;
 };
 
@@ -61,12 +60,10 @@ const downloadFromResponse = async (res, name, updateProgress) => {
 
 // exported function for use :: 
 export const downloadFile = async ({ 
-    // register, 
     id, 
     name, 
     type  
 }) => {
-    // const updateProgress = register({ id, name });
     const updateProgress = (progress) => console.log(progress);
     try {
         const downloadUrl = getEndpoint(id, type);

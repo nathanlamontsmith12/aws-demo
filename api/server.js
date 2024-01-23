@@ -32,6 +32,7 @@ const corsOptions = {
 
 await server.start();
 
+// Consumed by frontend (use cors!) :: 
 app.use(
     "/graphql",
     cors(corsOptions),
@@ -44,6 +45,48 @@ app.use(
             insertData
         })
     })
+);
+
+app.use(
+    "/download-file/:documentId/:type",
+    cors(corsOptions),
+    async (req, res) => {
+        try {
+            const documentId = req.params.documentId; 
+            const downloadType = req.params.type;   
+            const target = downloadType === "report"
+                ? S3_TARGETS.reports
+                : S3_TARGETS.promote;
+
+            console.log("\n\nAttempting to get file :: ", documentId, " -- in :: ", target);
+
+            const downloadResponse = await getFileForDownload(documentId, target);
+            const { 
+                success, 
+                stream, 
+                contentType, 
+                contentLength, 
+                filename 
+            } = downloadResponse;
+            
+            if (success) {
+                res.attachment(filename);
+                res.contentType(contentType);
+                res.set({"Content-Length": contentLength});
+                stream
+                    .on("error", (err) => { 
+                        console.log("ERROR while attempting to stream file for client download :: ");
+                        console.log(err);
+                    })
+                    .pipe(res);
+            } else {
+                return res.status(500).send();
+            }
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send();
+        }
+    }
 );
 
 
@@ -103,44 +146,6 @@ app.use(
 
         await updateDocumentDQStatus(documentId, dqStatus);
         res.status(200).send("Complete");
-    }
-);
-
-app.use(
-    "/download-file/:documentId/:type",
-    async (req, res) => {
-        try {
-            const documentId = req.params.documentId;    
-            const target = req.params.type === "report"
-                ? S3_TARGETS.reports
-                : S3_TARGETS.promote;
-
-            const downloadResponse = await getFileForDownload(documentId, target);
-
-            const { 
-                success, 
-                stream, 
-                contentType, 
-                contentLength, 
-                filename 
-            } = downloadResponse;
-
-            if (success) {
-                res.attachment(filename);
-                res.contentType(contentType);
-                res.set({"Content-Length": contentLength});
-                stream
-                    .on("error", (err) => { 
-                        console.log("ERROR while attempting to stream file for client download :: ");
-                        console.log(err);
-                    })
-                    .pipe(res);
-            } else {
-                return res.status(500).send();
-            }
-        } catch (err) {
-            return res.status(500).send();
-        }
     }
 );
 
