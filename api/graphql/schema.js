@@ -15,6 +15,7 @@ export const typeDefs = `#graphql
         createdAt: Date 
         updatedAt: Date 
         canDownload: Boolean 
+        hasReport: Boolean 
     }
 
     type MutationResponse {

@@ -1,4 +1,4 @@
-import { DOCUMENT_UPLOAD_STATUSES } from "../../constants.js";
+import { DATA_QUALITY_STATUSES, DOCUMENT_UPLOAD_STATUSES } from "../../constants.js";
 
 export const DocumentTypeResolver = {
     id: ({ id }) => id,
@@ -7,6 +7,7 @@ export const DocumentTypeResolver = {
     size: ({ size }) => size,
     uploadStatus: ({ upload_status }) => upload_status,
     canDownload: ({ upload_status }) => upload_status === DOCUMENT_UPLOAD_STATUSES.uploaded,
+    hasReport: ({ dq_status }) => dq_status === DATA_QUALITY_STATUSES.failed,
     dqFlag: ({ dq_flag }) => dq_flag,
     dqStatus: ({ dq_status }) => dq_status,
     createdAt: ({ created_at }) => created_at,

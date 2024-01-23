@@ -13,11 +13,12 @@ import { App } from "./App.jsx";
 
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
     if (graphQLErrors){
-        graphQLErrors.forEach(({ message, locations, path }) =>
+        graphQLErrors.forEach((graphQLError) => {
             console.log(
-                `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-            )
-        );
+                "[GraphQL error]::\n",
+                graphQLError
+            );
+        });
         return forward(operation);
     }
     
@@ -26,8 +27,6 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
         return forward(operation);
     }
 });
-
-console.log(GRAPHQL_ENDPOINT);
 
 const fileUploadLink = createUploadLink({
     uri: GRAPHQL_ENDPOINT,

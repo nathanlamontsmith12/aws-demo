@@ -1,7 +1,8 @@
 import React from "react";
-import { Button, Table } from "antd";
+import { Table } from "antd";
 import { PolledValue } from "./PolledValue.jsx";
 import { DATA_QUALITY_POLLING_STATUS, UPLOAD_POLLING_STATUS } from "../../constants.js";
+import { DownloadButtons } from "./DownloadButtons.jsx";
 
 
 export const DocumentsTable = ({ documents, loading }) => {
@@ -54,10 +55,13 @@ export const DocumentsTable = ({ documents, loading }) => {
             }
         },
         {
-            title: "Action",
-            key: "action",
-            render: ({ canDownload }) => {
-                return <Button disabled={!canDownload} >Download</Button>
+            title: "Downloads",
+            key: "download",
+            width: "200px",
+            render: (document) => {
+                return (
+                    <DownloadButtons document={document} />
+                );
             }
         }
     ];
