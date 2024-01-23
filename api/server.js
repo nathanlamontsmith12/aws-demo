@@ -11,7 +11,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { typeDefs } from "./graphql/schema.js";
 import { resolvers } from "./graphql/resolvers.js";
-import { DATA_QUALITY_STATUSES, ONE_GB, S3_TARGETS } from "./constants.js";
+import { DATA_QUALITY_STATUSES, DEFAULT_REPORT_NAME, ONE_GB, S3_TARGETS } from "./constants.js";
 import { insertData, knex } from "./db.js";
 import { repository } from "./data-access/repository.js";
 import { getFileForDownload } from "./file-storage/getFileForDownload.js";
@@ -133,20 +133,30 @@ app.use(
 app.use(
     "/data-quality-result/:documentId/:result/:reportName",
     async (req, res) => {
+        const validateReportName = (reportName) => {
+            if (!reportName || typeof reportName !== "string") {
+                return DEFAULT_REPORT_NAME;
+            } else if (reportName === "null") {
+                return DEFAULT_REPORT_NAME;
+            } else {
+                return reportName;
+            }
+        };
+
+        const reportName = validateReportName(req.params.reportName);
         const result = req.params.result;
         const documentId = req.params.documentId;
 
         console.log("\n\nReceiving notification :: data quality finished :: ", documentId);
         console.log(" -- Result :: ", result);
 
-        let dqStatus, reportName;
+        let dqStatus;
         if (result === "error") {
             dqStatus = DATA_QUALITY_STATUSES.error;
         } else if (result === "pass") {
             dqStatus = DATA_QUALITY_STATUSES.success;
         } else {
             dqStatus = DATA_QUALITY_STATUSES.failed;
-            reportName = req.params.reportName;
         }
 
         await repository.updateDocumentDQStatus(documentId, dqStatus, reportName);

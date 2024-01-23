@@ -138,7 +138,7 @@ export const handler = async (event) => {
 
                 // no report name :: 
                 /* global fetch */
-                await fetch(`${process.env.API_URL}/${process.env.DATA_QUALITY_ENDPOINT}/${documentId}/${result}`);
+                await fetch(`${process.env.API_URL}/${process.env.DATA_QUALITY_ENDPOINT}/${documentId}/${result}/${null}`);
             }
         } 
     } catch (err) {
