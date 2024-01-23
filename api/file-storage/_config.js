@@ -1,5 +1,6 @@
 import AWS from "aws-sdk";
 
+
 export const FileStorage = new AWS.S3({
     httpOptions: {
         timeout: 300000

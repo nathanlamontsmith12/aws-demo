@@ -1,4 +1,4 @@
-import { uploadFile } from "../../file-storage/index.js";
+import { uploadFile } from "../../file-storage/uploadFile.js";
 import DocumentModels from "../../models/Document.js";
 import { handleMutationError } from "./_mutation-helpers.js";
 

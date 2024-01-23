@@ -11,9 +11,13 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { typeDefs } from "./graphql/schema.js";
 import { resolvers } from "./graphql/resolvers.js";
-import { insertData, knex } from "./db.js";
 import { DATA_QUALITY_STATUSES, ONE_GB, S3_TARGETS } from "./constants.js";
-import { getFileForDownload, imprisonFile, promoteFile, updateDocumentDQStatus, updateDocumentOnError, updateDocumentOnUpload } from "./file-storage/index.js";
+import { insertData, knex } from "./db.js";
+import { repository } from "./data-access/repository.js";
+import { getFileForDownload } from "./file-storage/getFileForDownload.js";
+import { imprisonFile } from "./file-storage/imprisonFile.js";
+import { promoteFile } from "./file-storage/promoteFile.js";
+
 
 const { json } = bodyParser;
 
@@ -101,7 +105,7 @@ app.use(
             console.log(" -- Result :: ", verdict);
 
             if (verdict === "error") {
-                await updateDocumentOnError(documentId);
+                await repository.updateDocumentOnError(documentId);
             } else if (verdict === "innocent") {
                 await promoteFile(documentId);
             } else {
@@ -121,7 +125,7 @@ app.use(
     async (req, res) => {
         const documentId = req.params.documentId;
         console.log("\n\nReceiving notification :: document promoted :: ", documentId);
-        await updateDocumentOnUpload(documentId);
+        await repository.updateDocumentOnUpload(documentId);
         res.status(200).send("Complete");
     }
 );
@@ -145,7 +149,7 @@ app.use(
             reportName = req.params.reportName;
         }
 
-        await updateDocumentDQStatus(documentId, dqStatus, reportName);
+        await repository.updateDocumentDQStatus(documentId, dqStatus, reportName);
         res.status(200).send("Complete");
     }
 );
