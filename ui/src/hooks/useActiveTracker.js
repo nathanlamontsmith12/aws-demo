@@ -13,7 +13,7 @@ const getPollInterval = (interval) => {
 
 export const useActiveTracker = ({
     query, 
-    stopOnError = true, 
+    onError = null,
     onFetch = null, 
     transform = null,
     interval = null,
@@ -55,14 +55,16 @@ export const useActiveTracker = ({
             setLatestData(dataToUse);
 
             if (typeof onFetch === "function") {
-                onFetch(dataToUse, { stop, start });
+                onFetch(dataToUse, { data, refetch, stop, start });
             }
         }
     }, [data]);
 
-    if (stopOnError === true && error) {
-        clearInterval(pollingIdRef.current);
-    }
+    useEffect(() => {
+        if (error && typeof onError === "function") {
+            onError(error, { refetch, stop, start });
+        }
+    }, [error]);
     
     return [
         latestData, 

@@ -25,7 +25,12 @@ export const Documents = () => {
     const [documents, { error, refetch }] = useActiveTracker({
         query: getDocuments,
         transform: (data) => data?.documents,
-        onFetch: onDocumentFetch
+        onFetch: onDocumentFetch,
+        onError: (error, { stop }) => {
+            console.log("Error Polling Documents :: ", error);
+            console.log("-- Stop Polling --");
+            stop();
+        }
     });
 
     if (error) {
