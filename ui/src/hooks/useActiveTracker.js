@@ -23,7 +23,6 @@ export const useActiveTracker = ({
     const shouldTransformDataOnFetch = typeof transform === "function";
 
     const [latestData, setLatestData] = useState(defaultData);
-    const [mounting, setMounting] = useState(true);
     const pollingIdRef = useRef(null);
 
     const { 
@@ -32,27 +31,23 @@ export const useActiveTracker = ({
         refetch
     } = useQuery(query, { fetchPolicy: "no-cache" });
 
+    const stop = () => {
+        clearInterval(pollingIdRef.current);
+        console.log("Stop :: ", pollingIdRef);
+    };
+    
+    const start = () => {
+        stop();
+        pollingIdRef.current = setInterval(() => {
+            console.log("Polling....");
+            refetch();
+        }, getPollInterval(interval));
+        console.log("Start :: ", pollingIdRef);
+    };
+
     useEffect(() => {
-        // sometimes react makes you do silly workarounds >.<
-        const timeoutId = setTimeout(() => {
-            clearTimeout(timeoutId);
-            setMounting(false);
-        }, 0);
-
-        if (pollingIdRef.current === null) {
-            pollingIdRef.current = setInterval(() => {
-                refetch();
-            }, getPollInterval(interval));
-        }
-
-        // clean-up function :: 
-        return () => {
-            if (mounting !== true) {
-                // getting around the initial invocation of clean-up function 
-                // when component mounts :: 
-                clearInterval(pollingIdRef.current);
-            }
-        };
+        start();
+        return stop;
     }, []);
 
     useEffect(() => {
@@ -86,7 +81,8 @@ export const useActiveTracker = ({
             data, 
             error, 
             refetch, 
-            stopPolling: () => clearInterval(pollingIdRef.current)
+            start, 
+            stop 
         }
     ];
 };
