@@ -15,7 +15,6 @@ export const useActiveTracker = ({
     query, 
     stopOnError = true, 
     onFetch = null, 
-    stopIf = null,
     transform = null,
     interval = null,
     defaultData = null
@@ -33,16 +32,13 @@ export const useActiveTracker = ({
 
     const stop = () => {
         clearInterval(pollingIdRef.current);
-        console.log("Stop :: ", pollingIdRef);
     };
     
     const start = () => {
         stop();
         pollingIdRef.current = setInterval(() => {
-            console.log("Polling....");
             refetch();
         }, getPollInterval(interval));
-        console.log("Start :: ", pollingIdRef);
     };
 
     useEffect(() => {
@@ -59,14 +55,7 @@ export const useActiveTracker = ({
             setLatestData(dataToUse);
 
             if (typeof onFetch === "function") {
-                onFetch(dataToUse);
-            }
-
-            if (typeof stopIf === "function") {
-                const stopPolling = stopIf(dataToUse);
-                if (stopPolling) {
-                    clearInterval(pollingIdRef.current);
-                }
+                onFetch(dataToUse, { stop, start });
             }
         }
     }, [data]);

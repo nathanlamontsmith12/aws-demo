@@ -1,16 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { getDocuments } from "./queries.js";
 import { DocumentUpload } from "../../components/DocumentUpload/index.jsx";
 import { Spacer } from "../../components/Spacer/index.jsx";
 import { ErrorMessage } from "../../components/ErrorMessage/index.jsx";
 import { useActiveTracker } from "../../hooks/useActiveTracker.js";
 import { DocumentsTable } from "./DocumentsTable.jsx";
+import { DATA_QUALITY_POLLING_STATUS, UPLOAD_POLLING_STATUS } from "../../constants.js";
+
+const onDocumentFetch = (documents, { start, stop }) => {
+    if (documents) {
+        const continuePolling = documents?.some?.(({ uploadStatus, dqStatus }) => {
+            return (uploadStatus === UPLOAD_POLLING_STATUS || dqStatus === DATA_QUALITY_POLLING_STATUS) 
+        });
+        if (continuePolling) {
+            start();
+        } else {
+            stop();
+        }
+    }
+};
 
 
 export const Documents = () => {
     const [documents, { error, refetch }] = useActiveTracker({
         query: getDocuments,
-        transform: (data) => data?.documents
+        transform: (data) => data?.documents,
+        onFetch: onDocumentFetch
     });
 
     if (error) {
